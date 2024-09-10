@@ -16,7 +16,7 @@ var imageName = 'techexcel/dotnetcoreapp'
 var startupCommand = ''
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
-  name: appServicePlanName
+  name: 'appServicePlanName-${environment}'
   location: location
   sku: {
     name: sku
@@ -28,7 +28,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
 }
 
 resource webApp 'Microsoft.Web/sites@2021-02-01' = {
-  name: webAppName
+  name: 'webAppName-${environment}'
   location: location
   properties: {
     serverFarmId: appServicePlan.id
@@ -40,7 +40,7 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: appInsightsName
+  name: 'appInsightsName-${environment}'
   location: location
   kind: 'web'
   properties: {
@@ -49,7 +49,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
-  name: registryName
+  name: 'registryName-${environment}'
   location: location
   sku: {
     name: registrySku
