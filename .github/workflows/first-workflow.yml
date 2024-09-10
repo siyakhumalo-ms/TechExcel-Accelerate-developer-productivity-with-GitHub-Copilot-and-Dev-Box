@@ -2,6 +2,11 @@ name: First Workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      example_input:
+        description: 'Example input description'
+        required: true
+        default: 'default value'
 
 jobs:
   job1:
