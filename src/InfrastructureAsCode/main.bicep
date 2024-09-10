@@ -1,11 +1,11 @@
 // TODO: complete this script
 @description('Environment of the web app')
-param environment string = '${env.targetEnv}'
+param environment string
 
 @description('Location of services')
 param location string = resourceGroup().location
 
-var webAppName = '${uniqueString(resourceGroup().id)}-${environment}'
+var webAppName = '${uniqueString(resourceGroup().id)}-mpnp-webapp'
 var appServicePlanName = '${uniqueString(resourceGroup().id)}-mpnp-asp'
 var logAnalyticsName = '${uniqueString(resourceGroup().id)}-mpnp-la'
 var appInsightsName = '${uniqueString(resourceGroup().id)}-mpnp-ai'
@@ -16,7 +16,7 @@ var imageName = 'techexcel/dotnetcoreapp'
 var startupCommand = ''
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
-  name: 'appServicePlanName-${environment}'
+  name: '${appServicePlanName}-${environment}'
   location: location
   sku: {
     name: sku
@@ -28,7 +28,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-02-01' = {
 }
 
 resource webApp 'Microsoft.Web/sites@2021-02-01' = {
-  name: 'webAppName-${environment}'
+  name: '${webAppName}-${environment}'
   location: location
   properties: {
     serverFarmId: appServicePlan.id
@@ -39,17 +39,30 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
   }
 }
 
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
+  name: '${logAnalyticsName}-${environment}'
+  location: location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+}
+
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'appInsightsName-${environment}'
+  name: '${appInsightsName}-${environment}'
   location: location
   kind: 'web'
   properties: {
     Application_Type: 'web'
+    WorkspaceResourceId: logAnalytics.id
   }
 }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' = {
-  name: 'registryName-${environment}'
+  name: '${registryName}-${environment}'
   location: location
   sku: {
     name: registrySku
