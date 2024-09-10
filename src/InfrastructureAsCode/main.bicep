@@ -39,7 +39,6 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
   }
 }
 
-
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: logAnalyticsName
   location: location
