@@ -37,7 +37,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal ./src/Application/tests/RazorPagesTestSample.Tests/RazorPagesTestSample.Tests.csproj
 
-  publish:
+  publish-image:
 
     runs-on: ubuntu-latest
     needs: build
@@ -51,16 +51,68 @@ jobs:
     - name: Docker push
       run: docker push ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
 
+  deploy-dev-env:
+
+    runs-on: ubuntu-latest
+    needs: publish-image
+    environment:
+      name: dev
+      url: https://vs27w7ndcpge4-mpnp-webapp-dev.azurewebsites.net/
+    
+    steps:
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v2.1.1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'vs27w7ndcpge4-mpnp-webapp-dev'
+          images: vs27w7ndcpge4mpnpreg.azurecr.io/techexcel/dotnetcoreapp:${{ env.tag }}
+
+
+  deploy-test-env:
+    runs-on: ubuntu-latest
+    needs: deploy-dev-env
+    environment:
+      name: test
+      url: https://vs27w7ndcpge4-mpnp-webapp-test.azurewebsites.net
+    steps:
+    - name: Manual approval
+      uses: hmarr/auto-approve-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Azure login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
     - name: Update Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: vs27w7ndcpge4-mpnp-webapp-dev
-        images: vs27w7ndcpge4mpnpreg.azurecr.io/techexcel/dotnetcoreapp:${{ env.tag }} 
-        
+        app-name: vs27w7ndcpge4-mpnp-webapp-test
+        images: vs27w7ndcpge4mpnpreg.azurecr.io/techexcel/dotnetcoreapp:${{ env.tag }}
     - name: Azure logout
       run: az logout
+
+  deploy-prod-env:
+    runs-on: ubuntu-latest
+    needs: deploy-dev-env
+    environment:
+      name: prod
+      url: https://vs27w7ndcpge4-mpnp-webapp-prod.azurewebsites.net
+    steps:
+    - name: Manual approval
+      uses: hmarr/auto-approve-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Update Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: vs27w7ndcpge4-mpnp-webapp-prod
+        images: vs27w7ndcpge4mpnpreg.azurecr.io/techexcel/dotnetcoreapp:${{ env.tag }}
+    - name: Azure logout
+      run: az logout      
