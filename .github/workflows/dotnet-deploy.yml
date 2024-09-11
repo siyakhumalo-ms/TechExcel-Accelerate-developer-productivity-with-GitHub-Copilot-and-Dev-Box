@@ -1,4 +1,11 @@
-paths:
+name: .NET Build and Test
+
+on:
+  push:
+    branches: 
+      - "main"
+      - "exercise-3"
+    paths:
       - 'src/Application/**'
   pull_request:
     branches: 
