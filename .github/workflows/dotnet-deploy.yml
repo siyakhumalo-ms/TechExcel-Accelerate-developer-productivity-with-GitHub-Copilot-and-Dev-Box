@@ -77,10 +77,6 @@ jobs:
       name: test
       url: https://vs27w7ndcpge4-mpnp-webapp-test.azurewebsites.net
     steps:
-    - name: Manual approval
-      uses: hmarr/auto-approve-action@v2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Azure login
       uses: azure/login@v1
       with:
@@ -100,10 +96,6 @@ jobs:
       name: prod
       url: https://vs27w7ndcpge4-mpnp-webapp-prod.azurewebsites.net
     steps:
-    - name: Manual approval
-      uses: hmarr/auto-approve-action@v2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Azure login
       uses: azure/login@v1
       with:
