@@ -92,7 +92,7 @@ namespace RazorPagesTestSample.Pages
             return RedirectToPage();
         }
 
-        // Write file to specified directory.
+        // Write file to specified directory..
         public static void WriteToDirectory(ZipArchiveEntry entry, string destDirectory)
         {
             string destFileName = Path.Combine(destDirectory, entry.FullName);
