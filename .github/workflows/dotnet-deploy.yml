@@ -70,7 +70,6 @@ jobs:
           app-name: 'vs27w7ndcpge4-mpnp-webapp-dev'
           images: vs27w7ndcpge4mpnpreg.azurecr.io/techexcel/dotnetcoreapp:${{ env.tag }}
 
-
   deploy-test-env:
     runs-on: ubuntu-latest
     needs: deploy-dev-env
@@ -96,7 +95,7 @@ jobs:
 
   deploy-prod-env:
     runs-on: ubuntu-latest
-    needs: deploy-dev-env
+    needs: deploy-test-env
     environment:
       name: prod
       url: https://vs27w7ndcpge4-mpnp-webapp-prod.azurewebsites.net
