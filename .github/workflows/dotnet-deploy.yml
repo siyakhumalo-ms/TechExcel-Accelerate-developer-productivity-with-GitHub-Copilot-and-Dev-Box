@@ -28,8 +28,8 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore ./src/Application/RazorPagesTestSample/RazorPagesTestSample.csproj
+      run: dotnet restore ./src/Application/src/RazorPagesTestSample/RazorPagesTestSample.csproj
     - name: Build
-      run: dotnet build --no-restore ./src/Application/RazorPagesTestSample/RazorPagesTestSample.csproj
+      run: dotnet build --no-restore ./src/Application/src/RazorPagesTestSample/RazorPagesTestSample.csproj
     - name: Test
-      run: dotnet test --no-build --verbosity normal ./src/Application/RazorPagesTestSample.Tests/RazorPagesTestSample.Tests.csproj
+      run: dotnet test --no-build --verbosity normal ./src/Application/tests/RazorPagesTestSample.Tests/RazorPagesTestSample.Tests.csproj
