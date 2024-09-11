@@ -1,20 +1,16 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET Build and Test
-
-on:
-  push:
-    branches: 
-      - "main"
-      - "exercise-3"
-    paths:
+paths:
       - 'src/Application/**'
   pull_request:
     branches: 
       - "main"
     paths:
       - 'src/Application/**'
+
+env:
+  registryName: vs27w7ndcpge4mpnpreg.azurecr.io
+  repositoryName: techexcel/dotnetcoreapp
+  dockerFolderPath: ./src/Application/src/RazorPagesTestSample
+  tag: ${{ github.run_number }}      
 
 jobs:
   build:
@@ -33,3 +29,16 @@ jobs:
       run: dotnet build --no-restore ./src/Application/src/RazorPagesTestSample/RazorPagesTestSample.csproj
     - name: Test
       run: dotnet test --no-build --verbosity normal ./src/Application/tests/RazorPagesTestSample.Tests/RazorPagesTestSample.Tests.csproj
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Docker login
+      run: docker login ${{ env.registryName }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
+    - name: Docker build
+      run: docker build -t ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }} --build-arg build_version=${{ env.tag }} ${{ env.dockerFolderPath }}
+    - name: Docker push
+      run: docker push ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
